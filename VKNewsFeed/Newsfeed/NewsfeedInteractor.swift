@@ -17,6 +17,7 @@ class NewsfeedInteractor: NewsfeedBusinessLogic {
   var presenter: NewsfeedPresentationLogic?
   var service: NewsfeedService?
   
+    // извлечение данных
     private var fetcher: DataFetcher = NetworkDataFetcher(networking: NetworkService())
     
   func makeRequest(request: Newsfeed.Model.Request.RequestType) {
@@ -31,8 +32,6 @@ class NewsfeedInteractor: NewsfeedBusinessLogic {
             self?.presenter?.presentData(response: Newsfeed.Model.Response.ResponseType.presentNewsfeed(feed: feedResponse))
         }
     }
-    
-    
   }
   
 }
