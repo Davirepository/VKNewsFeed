@@ -11,7 +11,9 @@ import UIKit
 class WebImageView: UIImageView {
     
     func set(imageURL: String?) {
-        guard let imageURL = imageURL, let url = URL(string: imageURL) else { return }
+        guard let imageURL = imageURL, let url = URL(string: imageURL) else {
+            self.image = nil
+            return }
         
         // что бы не загружать одинаковые изображения несколько раз, проверяем их на налиие в кэше
         if let cachedResponse = URLCache.shared.cachedResponse(for: URLRequest(url: url)) {
