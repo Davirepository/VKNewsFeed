@@ -27,10 +27,12 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
   func presentData(response: Newsfeed.Model.Response.ResponseType) {
     
     switch response {
-    case .presentNewsfeed(let feed):
+    case .presentNewsfeed(let feed, let revealedPostIds):
+        
+        print(revealedPostIds)
         
         let cells = feed.items.map { (feedItem) in
-            cellViewModel(from: feedItem, profiles: feed.profiles, groups: feed.groups)
+            cellViewModel(from: feedItem, profiles: feed.profiles, groups: feed.groups, revealedPostIds: revealedPostIds)
         }
         let feedViewModel = FeedViewModel.init(cells: cells)
         viewController?.displayData(viewModel: Newsfeed.Model.ViewModel.ViewModelData.displayNewsfeed(feedViewModel: feedViewModel))
@@ -38,7 +40,7 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
   
   }
     // преобразование данных в формат данных ячеек
-    private func cellViewModel(from feedItem: FeedItem, profiles: [Profile], groups: [Group]) -> FeedViewModel.Cell {
+    private func cellViewModel(from feedItem: FeedItem, profiles: [Profile], groups: [Group], revealedPostIds: [Int]) -> FeedViewModel.Cell {
         
         let profile = self.profile(for: feedItem.sourceId, profiles: profiles, groups: groups)
         
@@ -47,9 +49,16 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
         let date = Date(timeIntervalSince1970: feedItem.date)
         let dateTitle = dateFormatter.string(from: date)
         
-        let sizes = cellLayoutCalculator.sizes(postText: feedItem.text, photoAttachment: photoAttachment)
+        let isFullSize = revealedPostIds.contains { (postId) -> Bool in
+            return postId == feedItem.postId
+        }
+        
+        //let isFullSize = revealedPostIds.contains(feedItem.postId)
+        
+        let sizes = cellLayoutCalculator.sizes(postText: feedItem.text, photoAttachment: photoAttachment, isFullSizesPost: isFullSize)
         
         return FeedViewModel.Cell.init(
+            postId: feedItem.postId,
             iconUrlString: profile.photo,
             name: profile.name,
             date: dateTitle,
